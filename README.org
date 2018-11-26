@@ -3,10 +3,27 @@ TS-Rpc is a Typescript-library of decorators for abstraction of transport layers
 
 ** Quick Example
 #+BEGIN_SRC typescript
-import { IRpcServiceConfig, TSRpc, TSRpcError } from 'ts-rpc';
+import { IHttpClient, IRpcMethodConfig, IRpcServiceConfig, TSRpc, TSRpcError } from 'ts-rpc';
 import { deserialize, JsonName, serialize } from 'tserialize';
 import { guid } from 'some-guid-generator';
 
+/* Example transport layer */
+class JsonRpcTransportLayer implements IHttpClient {
+    /* This is being set somewhere outside of this class */
+    public static $http: ng.IHttpService;
+
+    post(url: string, data: any, serviceConfig: any, methodConfig: any): any {
+        const { $http } = JsonRpcTransportLayer;
+
+        return new Promise((resolve, reject): void => {
+            $http.post(url, data, this.requestConfig)
+                .then(resolve)
+                .catch(reject);
+        });
+    }
+}
+
+/* Example model */
 class BaseRequest {
     @JsonName()
     secret: string;
@@ -15,25 +32,33 @@ class BaseRequest {
     toServer = (): any => serialize(this);
 }
 
-interface IJsonRpcServiceConfig extends IRpcServiceConfig {}
-
-const servicePreprocessor = (request: any, serviceConfig: IJsonRpcServiceConfig) => ({
-    id: guid(),
-    params: request
-});
-
-interface IMethodConfig {
+interface IJsonRpcMethodConfig extends IRpcMethodConfig {
+    method: string;
     responseModel?: { fromServer(rawData: object): any };
 }
 
-const methodPreprocessor = (request?: any, config: IMethodConfig) =>
-    request ? request.toServer() : null;
+const servicePreprocessor = (request: any, serviceConfig: IRpcServiceConfig, methodConfig: IJsonRpcMethodConfig) => ({
+    id: guid(),
+    method: methodConfig.method,
+    params: request
+});
+const servicePostprocessor = (request: any) => request.result;
 
-const methodPostprocessor = (responseObject: Promise<any>, config: IMethodConfig) => responseObject
-    .catch(httpError => throw TSError.makeHttpError(httpError.status, httpError.statusText))
-    .then(response => config.responseModel ? config.responseModel.fromServer(response.result) : void 0);
+export const JsonRpcService = TSRpc.makeClassDecorator({
+    apiUrl: '/api/v1',
+    httpClient: new JsonRpcTransportLayer()
+});
 
-export const JsonRpcMethod = TSRpc.makeMethodDecorator<ISerializable, IMethodConfig>(
+const methodPreprocessor = (request?: any, config: IMethodConfig) => request ? request.toServer() : null;
+const methodPostprocessor = (
+        responseObject: Promise<any>,
+        serviceConfig: IRpcServiceConfig,
+        methodConfig: IJsonRpcMethodConfig
+    ) => responseObject
+        .catch(httpError => throw TSError.makeHttpError(httpError.status, httpError.statusText))
+        .then(({ responseModel, result }) => responseModel ? responseModel.fromServer(result) : void 0);
+
+export const JsonRpcMethod = TSRpc.makeMethodDecorator<{ toServer(): object }, IMethodConfig>(
     methodPreprocessor,
     methodPostprocessor
 );
@@ -53,4 +78,7 @@ TSRpc.makeMethodDecorator<TRequest, TPayload>(
     transportFactory?: () => IHttpClient
 )
 #+END_SRC
+
+** Ideas
++ Add generics to adapter if possible 
 
