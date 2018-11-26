@@ -4,12 +4,15 @@
  * @type {import('./types').PrettierConfig}
  */
 const config = {
-  singleQuote: true,
-  arrowParens: 'always',
-  semi: false,
-  bracketSpacing: true,
-  trailingComma: 'es5',
-  printWidth: 80,
-}
+    arrowParens: 'avoid',
+    bracketSpacing: true,
+    endOfLine: 'lf',
+    printWidth: 120,
+    semi: true,
+    singleQuote: true,
+    tabWidth: 4,
+    trailingComma: 'none',
+    useTabs: false
+};
 
-module.exports = config
+module.exports = config;

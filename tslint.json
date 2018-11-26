@@ -1,105 +1,104 @@
 {
-  "extends": [
-    "tslint:recommended",
-    "tslint-config-standard",
-    "tslint-etc",
-    "tslint-react",
-    "tslint-config-prettier"
-  ],
-  "rules": {
-    // types related rules
-    "no-namespace": {
-      "options": [
-        "allow-declarations"
-      ]
-    },
-    // core lint rules
-    "ban": {
-      "options": [
-        {
-          "name": "parseInt",
-          "message": "use #type-coercion -> Number(val)"
-        },
-        {
-          "name": "parseFloat",
-          "message": "use #type-coercion -> Number(val)"
-        },
-        {
-          "name": "Array",
-          "message": "use #array-constructor"
-        },
-        {
-          "name": [
-            "describe",
-            "only"
-          ],
-          "message": "don't focus spec blocks"
-        },
-        {
-          "name": [
-            "it",
-            "only"
-          ],
-          "message": "don't focus tests"
-        }
-      ]
-    },
-    "no-magic-numbers": true,
-    "no-require-imports": true,
-    "no-boolean-literal-compare": true,
-    "no-invalid-this": {
-      "options": "check-function-in-method"
-    },
-    "no-invalid-template-strings": true,
-    "ordered-imports": true,
-    "prefer-template": true,
-    "newline-before-return": true,
-    "match-default-export-name": true,
-    "no-parameter-reassignment": true,
-    "file-name-casing": {
-      "options": [
-        "kebab-case"
-      ]
-    },
-    "switch-default": true,
-    // tslint:recommended overrides
-    "member-access": {
-      "options": [
-        "no-public"
-      ]
-    },
-    "object-literal-sort-keys": false,
-    "interface-over-type-literal": false,
-    // tslint:tslint-config-standard overrides
-    "no-unused-variable": false, // https://github.com/blakeembrey/tslint-config-standard/issues/51
-    // tslint-etc rules
-    "no-unused-declaration": true,
-    // tslint-react rules
-    "jsx-boolean-value": {
-      "options": "never"
-    },
-    // My overrides
-    "member-ordering": [
-      true,
-      {
-        "order": [
-          "public-instance-field",
-          "private-instance-field",
-          "private-static-field",
-          "public-static-field",
-          "private-instance-method",
-          "protected-instance-method",
-          "public-constructor",
-          "private-constructor",
-          "public-instance-method"
-        ]
-      }
+    "extends": [
+        "tslint:recommended"
     ],
-    "no-inferrable-types": false,
-    "no-any": false,
-    "no-unsafe-any": true,
-    "no-string-literal": false
-  },
-  // apply the same rules for any JS if allowJS is gonna be used
-  "jsRules": true
+    "rules": {
+        "arrow-parens": [true, "ban-single-arg-parens"],
+        "ban": {
+            "options": [
+                {
+                    "name": "parseInt",
+                    "message": "use #type-coercion -> Number(val)"
+                },
+                {
+                    "name": "parseFloat",
+                    "message": "use #type-coercion -> Number(val)"
+                },
+                {
+                    "name": "Array",
+                    "message": "use #array-constructor"
+                },
+                {
+                    "name": [
+                        "describe",
+                        "only"
+                    ],
+                    "message": "don't focus spec blocks"
+                },
+                {
+                    "name": [
+                        "it",
+                        "only"
+                    ],
+                    "message": "don't focus tests"
+                }
+            ]
+        },
+        "curly": [true, "ignore-same-line"],
+        "eofline": true,
+        "file-name-casing": {
+            "options": [
+                "kebab-case"
+            ]
+        },
+        "indent": [true, "spaces", 4],
+        "interface-over-type-literal": true,
+        "linebreak-style": [true, "LF"],
+        "match-default-export-name": true,
+        "max-line-length": [
+            true,
+            {
+                "limit": 120,
+                "ignore-pattern": "//|it\\("
+            }
+        ],
+        "member-access": {
+            "options": [
+                "no-public"
+            ]
+        },
+        "member-ordering": [
+            true,
+            {
+                "order": [
+                    "public-instance-field",
+                    "private-instance-field",
+                    "private-static-field",
+                    "public-static-field",
+                    "private-instance-method",
+                    "protected-instance-method",
+                    "public-constructor",
+                    "private-constructor",
+                    "public-instance-method"
+                ]
+            }
+        ],
+        "no-invalid-this": {
+            "options": "check-function-in-method"
+        },
+        "no-invalid-template-strings": true,
+        "no-magic-numbers": true,
+        "no-namespace": {
+            "options": [
+                "allow-declarations"
+            ]
+        },
+        "no-parameter-reassignment": true,
+        "no-require-imports": true,
+        "no-string-literal": false,
+        "no-unsafe-any": false, 
+        "object-literal-sort-keys": false,
+        "ordered-imports": true,
+        "prefer-template": true,
+        "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+        "trailing-comma": [
+            true,
+            {
+                "esSpecCompliant": true,
+                "multiline": "always",
+                "singleline": "never"
+            }
+        ]
+    },
+    "jsRules": true
 }

@@ -1,0 +1,56 @@
+* TS-Rpc
+TS-Rpc is a Typescript-library of decorators for abstraction of transport layers and data transformation
+
+** Quick Example
+#+BEGIN_SRC typescript
+import { IRpcServiceConfig, TSRpc, TSRpcError } from 'ts-rpc';
+import { deserialize, JsonName, serialize } from 'tserialize';
+import { guid } from 'some-guid-generator';
+
+class BaseRequest {
+    @JsonName()
+    secret: string;
+
+    static fromServer = (obj: any): BaseRequest => deserialize(obj, BaseRequest);
+    toServer = (): any => serialize(this);
+}
+
+interface IJsonRpcServiceConfig extends IRpcServiceConfig {}
+
+const servicePreprocessor = (request: any, serviceConfig: IJsonRpcServiceConfig) => ({
+    id: guid(),
+    params: request
+});
+
+interface IMethodConfig {
+    responseModel?: { fromServer(rawData: object): any };
+}
+
+const methodPreprocessor = (request?: any, config: IMethodConfig) =>
+    request ? request.toServer() : null;
+
+const methodPostprocessor = (responseObject: Promise<any>, config: IMethodConfig) => responseObject
+    .catch(httpError => throw TSError.makeHttpError(httpError.status, httpError.statusText))
+    .then(response => config.responseModel ? config.responseModel.fromServer(response.result) : void 0);
+
+export const JsonRpcMethod = TSRpc.makeMethodDecorator<ISerializable, IMethodConfig>(
+    methodPreprocessor,
+    methodPostprocessor
+);
+#+END_SRC
+
+** API
+*** Class decorator factory
+#+BEGIN_SRC typescript
+TSRpc.makeClassDecorator(config: IRpcServiceConfig)
+#+END_SRC
+
+*** Method decorator factory
+#+BEGIN_SRC typescript
+TSRpc.makeMethodDecorator<TRequest, TPayload>(
+    preprocessors: (request: TRequest) => any,
+    postprocessors: (response: any, payload: TPayload) => any,
+    transportFactory?: () => IHttpClient
+)
+#+END_SRC
+
