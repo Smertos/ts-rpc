@@ -4,8 +4,8 @@ import { IRpcProcessor } from './processor';
 export interface IRpcServiceConfig {
     apiServerUrl: string;
     httpClient: IHttpClient;
-    postprocessors: IRpcProcessor[];
-    preprocessors: IRpcProcessor[];
+    postprocessors: IRpcProcessor | IRpcProcessor[];
+    preprocessors: IRpcProcessor | IRpcProcessor[];
     requestParams?: object;
 }
 

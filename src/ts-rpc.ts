@@ -16,8 +16,12 @@ export class TSRpc {
         config: TServiceConfig,
     ): (endpoint?: string) => any {
         const { httpClient, apiServerUrl, postprocessors, preprocessors } = config;
-        const servicePreprocessor = compressPipeline<any, any, TServiceConfig, any>(preprocessors);
-        const servicePostprocessor = compressPipeline<any, any, TServiceConfig, any>(postprocessors);
+        const servicePreprocessor = Array.isArray(preprocessors)
+            ? compressPipeline<any, any, TServiceConfig, any>(preprocessors)
+            : preprocessors;
+        const servicePostprocessor = Array.isArray(postprocessors)
+            ? compressPipeline<any, any, TServiceConfig, any>(postprocessors)
+            : postprocessors;
 
         return (endpoint?: string): any => {
             return (target: any): void =>
