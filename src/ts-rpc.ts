@@ -18,10 +18,10 @@ export class TSRpc {
         const { httpClient, apiServerUrl, postprocessors, preprocessors } = config;
         const servicePreprocessor = Array.isArray(preprocessors)
             ? compressPipeline<any, any, TServiceConfig, any>(preprocessors)
-            : preprocessors;
+            : preprocessors || [];
         const servicePostprocessor = Array.isArray(postprocessors)
             ? compressPipeline<any, any, TServiceConfig, any>(postprocessors)
-            : postprocessors;
+            : postprocessors || [];
 
         return (endpoint?: string): any => {
             return (target: any): void =>
@@ -36,8 +36,8 @@ export class TSRpc {
     }
 
     static makeMethodDecorator<TRequest, TMethodConfig extends IRpcMethodConfig>(
-        preprocessors: IRpcPreprocessors<TRequest>,
-        postprocessors: IRpcPostprocessors<any, TMethodConfig>,
+        preprocessors: IRpcPreprocessors<TRequest> = [],
+        postprocessors: IRpcPostprocessors<any, TMethodConfig> = [],
         transportFactory?: () => IHttpClient,
     ): ExecutableDecorator<TMethodConfig> {
         return (config: TMethodConfig): Decorator => {
